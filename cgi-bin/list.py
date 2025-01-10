@@ -44,6 +44,6 @@ else:
 
 print('    </ul>')
 print('        <a href="/cgi-bin/write.py" class="post-button">post</a>')
-print('    <img src="/image/pepe4.jpeg" alt="Example Image" style="width:1200px;height:800px;">')
+print('    <img src="/image/pepe.jpeg" alt="Example Image" style="width:1200px;height:800px;">')
 print('</body>')
 print('</html>')
