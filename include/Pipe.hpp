@@ -6,7 +6,7 @@
 /*   By: sangyhan <sangyhan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/19 17:58:34 by sangyhan          #+#    #+#             */
-/*   Updated: 2024/08/09 19:59:53 by sangyhan         ###   ########.fr       */
+/*   Updated: 2024/08/20 15:23:35 by sangyhan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,27 @@
 class Pipe : public Buffer {
 	private:
 		int serverFd;
+		int inputFd;
 		bool error;
 		bool procEnd;
 		bool readEnd;
 		pid_t pid;
+		bool inClosed;
+		bool outClosed;
 
 	public:
-		Pipe(int fd);
+		Pipe(int inputFd, int outputFd);
 		~Pipe();
 
+		void closeInput();
+		void closeOutput();
 		int whoAmI();
 		const bool &getError();
 		void setError(bool code);
 		const int &getServerFd();
+		virtual int autoWrite(size_t size);
 		const pid_t &getPid();
+		const int &getInputFd();
 		void setPid(pid_t pid);
 		void setServerFd(int fd);
 		bool End();

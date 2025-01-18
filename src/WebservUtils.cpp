@@ -6,7 +6,7 @@
 /*   By: sangyhan <sangyhan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 16:46:15 by heolee            #+#    #+#             */
-/*   Updated: 2024/08/02 14:20:25 by sangyhan         ###   ########.fr       */
+/*   Updated: 2025/01/18 18:00:10 by sangyhan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,17 @@ void Webserv::closeSocket(int bufferIdx) {
 		{
 			int serverFd;
 			if (bufferList[i]->whoAmI() == 2)
+			{
 				serverFd = (static_cast<File *>(bufferList[i]))->getServerFd();
+				close((bufferList[i])->getFd());
+			}
 			else
+			{
 				serverFd = (static_cast<Pipe *>(bufferList[i]))->getServerFd();
-			close((bufferList[i])->getFd());
+				Pipe *pipe = static_cast<Pipe *>(bufferList[i]);
+				pipe->closeInput();
+				pipe->closeOutput();
+			}
 			std::map<int, Server>::iterator server = serverList.find(serverFd);
 			if (server != serverList.end())
 				server->second.deleteRequestByFile(bufList.front());

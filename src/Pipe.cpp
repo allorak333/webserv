@@ -6,18 +6,21 @@
 /*   By: sangyhan <sangyhan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/19 17:58:05 by sangyhan          #+#    #+#             */
-/*   Updated: 2024/08/09 20:00:22 by sangyhan         ###   ########.fr       */
+/*   Updated: 2024/08/20 15:33:27 by sangyhan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/Pipe.hpp"
 
 
-Pipe::Pipe(int fd) : Buffer(fd) {
+Pipe::Pipe(int inputFd, int outputFd) : Buffer(outputFd) {
     this->pid = -1;
+    this->inputFd = inputFd;
     error = false;
     procEnd = false;
     readEnd = false;
+    outClosed = false;
+    inClosed = false;
 }
 
 Pipe::~Pipe() {
@@ -68,6 +71,34 @@ void Pipe::setReadEnd(bool code)
     readEnd = code;
 }
 
+int Pipe::autoWrite(size_t size)
+{
+    if (index + size > writeBuffer.size())
+	{
+		size = writeBuffer.size() - index;
+	}
+	for (size_t i = 0; i < size; i++) {
+		cBuffer[i] = writeBuffer[index + i];
+	}
+	cBuffer[size + 1] = '\0';
+	int writtenSize = write(inputFd, cBuffer, size);
+	if (writtenSize > 0)
+	{
+		index += writtenSize;
+		if (index > writeBuffer.size() / 2)
+		{
+			writeBuffer.erase(writeBuffer.begin(), writeBuffer.begin() + index);
+			index = 0;
+		}
+	}
+	return writtenSize;
+}
+
+const int &Pipe::getInputFd()
+{
+    return inputFd;
+}
+
 const pid_t &Pipe::getPid()
 {
     return pid;
@@ -76,4 +107,22 @@ const pid_t &Pipe::getPid()
 void Pipe::setPid(pid_t pid)
 {
     this->pid = pid;
+}
+
+void Pipe::closeInput()
+{
+    if (inClosed == false)
+    {
+        close(inputFd);
+        inClosed = true;
+    }
+}
+
+void Pipe::closeOutput()
+{
+    if (outClosed == false)
+    {
+        close(fd);
+        outClosed = true;
+    }
 }
