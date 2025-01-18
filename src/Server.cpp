@@ -6,7 +6,7 @@
 /*   By: sangyhan <sangyhan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 14:42:02 by haejeong          #+#    #+#             */
-/*   Updated: 2024/08/09 20:44:17 by sangyhan         ###   ########.fr       */
+/*   Updated: 2024/08/23 11:21:20 by sangyhan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,7 +226,8 @@ int Server::afterProcessRequest(Buffer *file, struct kevent &change)
                             errorPage = makeDefaultErrorPage(code, message);
                         }
                         body.insert(body.end(), errorPage.begin(), errorPage.end());
-                        header = makeHeader(*(it->second.second), code, message, body, it->second.second->contentType);
+                        std::string contentType = getContentType(it->second.second->url);
+                        header = makeHeader(*(it->second.second), code, message, body, contentType);
                         res->getWriteBuffer().reserve(header.size() + body.size());
                         res->getWriteBuffer().insert(res->getWriteBuffer().end(), header.begin(), header.end());
                         res->getWriteBuffer().insert(res->getWriteBuffer().end(), body.begin(), body.end());
@@ -254,7 +255,7 @@ int Server::afterProcessRequest(Buffer *file, struct kevent &change)
                     message = "Created";
                 }
                 contentType = getContentType(it->second.second->url);
-                header = makeHeader(*(it->second.second), code, message, file->getReadBuffer(), it->second.second->contentType);
+                header = makeHeader(*(it->second.second), code, message, file->getReadBuffer(), contentType);
                 res->getWriteBuffer().reserve(header.size() + file->getReadBuffer().size());
                 res->getWriteBuffer().insert(res->getWriteBuffer().end(), header.begin(), header.end());
                 res->getWriteBuffer().insert(res->getWriteBuffer().end(), file->getReadBuffer().begin(), file->getReadBuffer().end());
@@ -301,7 +302,10 @@ int Server::checkValid(HttpRequest & request, std::string & target) {
     Location myLocation;
     bool isLocation = findMatchingLocation(request.url, myLocation);
     if (isLocation == false) {
-        request.errorPages = config.getErrorPages();
+        if (config.getErrorPages().size())
+            request.errorPages = config.getErrorPages();
+        if (config.getRedirection().first != 0)
+            request.redirection = config.getRedirection();
         if (config.getClientMaxBodySize() < (request.bodyEnd - request.bodyStart))
         {
             return 413;
@@ -347,6 +351,10 @@ int Server::checkValid(HttpRequest & request, std::string & target) {
         } else if (config.getErrorPages().size()) {
             request.errorPages = config.getErrorPages();
         }
+        if (myLocation.getRedirection().first != 0)
+            request.redirection = myLocation.getRedirection();
+        else if (config.getRedirection().first != 0)
+            request.redirection = config.getRedirection();
         if (myLocation.getClientMaxBodySize() != INT_MAX && myLocation.getClientMaxBodySize() < (request.bodyEnd - request.bodyStart)) {
             return 413;
         } else if (config.getClientMaxBodySize() != INT_MAX && config.getClientMaxBodySize() < (request.bodyEnd - request.bodyStart)) {
@@ -424,34 +432,29 @@ std::vector<Buffer*> Server::processRequest(Buffer *client, HttpRequest &request
                 if (pipe(outputarr) == -1) {
                 	throw RuntimeException("pipe");
 				}
-                Pipe *inPipe = new Pipe(inputarr[1]);
-                Pipe *outPipe = new Pipe(outputarr[0]);
+                Pipe *pipe = new Pipe(inputarr[1], outputarr[0]);
                 pid_t pid = handleCGI(inputarr, outputarr, target, request);
-                inPipe->setPid(pid);
-                outPipe->setPid(pid);
+                pipe->setPid(pid);
                 close(inputarr[0]);
                 close(outputarr[1]);
                 setNonblock(inputarr[1]);
                 setNonblock(outputarr[0]);
                 struct kevent procEvent;
-                EV_SET(&procEvent, pid, EVFILT_PROC, EV_ADD | EV_ENABLE, NOTE_EXIT, 0, (void *)outPipe);
+                EV_SET(&procEvent, pid, EVFILT_PROC, EV_ADD | EV_ENABLE, NOTE_EXIT, 0, (void *)pipe);
                 changeList.push_back(procEvent);
-                static_cast<Message *>(client)->addResource(inPipe);
-                static_cast<Message *>(client)->addResource(outPipe);
-                pushEvent(inPipe->getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, changeList);
-                pushEvent(outPipe->getFd(), EVFILT_READ, EV_ADD | EV_ENABLE, changeList);
-                inPipe->getReadBuffer().reserve(request.bodyEnd - request.bodyStart);
-                inPipe->getWriteBuffer().insert(inPipe->getWriteBuffer().end(), client->getReadBuffer().begin() + request.bodyStart,
+                static_cast<Message *>(client)->addResource(pipe);
+                pushEvent(inputarr[1], EVFILT_WRITE, EV_ADD | EV_ENABLE, changeList);
+                pushEvent(outputarr[0], EVFILT_READ, EV_ADD | EV_ENABLE, changeList);
+                pipe->getReadBuffer().reserve(request.bodyEnd - request.bodyStart);
+                pipe->getWriteBuffer().insert(pipe->getWriteBuffer().end(), client->getReadBuffer().begin() + request.bodyStart,
                     client->getReadBuffer().begin() + request.bodyEnd);
                 HttpRequest *request_share = new HttpRequest;
                 *request_share = request;
                 request_share->fileCount = 1;
                 request_share->target = target;
-                requestList[static_cast<Buffer *>(outPipe)] = std::make_pair(client, request_share);
-                inPipe->setServerFd(serverFd);
-                outPipe->setServerFd(serverFd);
-                resList.push_back(inPipe);
-                resList.push_back(outPipe);
+                requestList[static_cast<Buffer *>(pipe)] = std::make_pair(client, request_share);
+                pipe->setServerFd(serverFd);
+                resList.push_back(pipe);
             }
             else
             {
@@ -493,7 +496,6 @@ std::vector<Buffer*> Server::processRequest(Buffer *client, HttpRequest &request
             }
             else
             {
-                std::cout << "3" << std::endl;
                 code = 500;
             }
         }
@@ -561,10 +563,10 @@ std::vector<Buffer*> Server::processRequest(Buffer *client, HttpRequest &request
             else
             {
                 code = 200;
-                std::string contentType;
                 std::vector<char> header = makeResponseWithNoBody(request, code);
                 client->getWriteBuffer().reserve(header.size());
                 client->getWriteBuffer().insert(client->getWriteBuffer().end(), header.begin(), header.end());
+                pushEvent(client->getFd(), EVFILT_WRITE, EV_ADD | EV_ENABLE, changeList);
             }
         }
         else 
@@ -621,18 +623,18 @@ std::vector<Buffer*> Server::processRequest(Buffer *client, HttpRequest &request
                 {
                     body += "</pre><hr></body>\r\n</html>";
                     std::string message = "OK";
-                    std::string contentType = "text/html";
                     std::vector<char> tempBody;
                     tempBody.insert(tempBody.end(), body.begin(), body.end());
+                    std::string contentType = "text/html";
                     std::string header = makeHeader(request, code, message, tempBody, contentType);
                     response.reserve(tempBody.size() + header.size());
                     response.insert(response.end(), header.begin(), header.end());
                     response.insert(response.end(), tempBody.begin(), tempBody.end());
                 }
+                closedir(dp);
             }
             else
             {
-                std::cout << "4" << std::endl;
                 code = 500;
             }
         } 
@@ -641,6 +643,7 @@ std::vector<Buffer*> Server::processRequest(Buffer *client, HttpRequest &request
                 std::vector<char> body; 
                 body.insert(body.end(), request.errorPages[code].begin(), request.errorPages[code].end());
                 std::string message = returnErrorMsg(code);
+                // std::string contentType = getContentType(request.url);
                 std::string contentType = "text/html";
                 std::string header = makeHeader(request, code, message, body, contentType);
                 response.reserve(header.size() + body.size());
@@ -671,6 +674,7 @@ std::vector<char> Server::makeResponseWithNoBody(HttpRequest &request, int code)
     std::string message;
     std::vector<char> res;
 
+    std::string contentType = getContentType(request.url);
     if (code / 100 == 3) {
         if (code == 301) {
             message = "Moved Permanently";
@@ -707,8 +711,8 @@ std::vector<char> Server::makeResponseWithNoBody(HttpRequest &request, int code)
         }
         body.reserve(body.size() + temp.size());
         body.insert(body.end(), temp.begin(), temp.end());
+        contentType = "text/html";
     }
-    std::string contentType = "text/html";
     header = makeHeader(request, code, message, body, contentType);
     res.reserve(header.size() + body.size());
     res.insert(res.end(), header.begin(), header.end());
@@ -747,6 +751,10 @@ std::string Server::makeDefaultErrorPage(int & code, std::string & message) {
 std::string Server::makeHeader(HttpRequest & request, int & code, std::string & message, std::vector<char> &body, std::string & contentType) {
     std::ostringstream oss;
     
+    if (request.redirection.first != 0) {
+        code = request.redirection.first;
+        request.url = request.redirection.second;
+    }
     oss << request.httpVersion << " " << code << " " << message << "\r\n";
     oss << "Content-Type: " << contentType << "\r\n";
     oss << "Content-Length: " << body.size() << "\r\n";

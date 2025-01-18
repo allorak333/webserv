@@ -6,7 +6,7 @@
 /*   By: sangyhan <sangyhan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 16:27:05 by heolee            #+#    #+#             */
-/*   Updated: 2024/08/02 14:02:27 by sangyhan         ###   ########.fr       */
+/*   Updated: 2024/08/20 11:45:58 by sangyhan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class Buffer {
 
 		virtual int whoAmI() = 0;
 		int getFd() const;
-		int autoWrite(size_t size);
+		virtual int autoWrite(size_t size);
 		bool writeBufEmpty();
 		std::vector<char>& getReadBuffer();
 		std::vector<char>& getWriteBuffer();

@@ -98,6 +98,7 @@ struct HttpRequest {
         host(""), 
         userAgent(""), 
         accept(""),
+        // contentType("text/html"),
         contentLength(""),
         query("") ,
         error(false),
