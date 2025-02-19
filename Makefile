@@ -15,18 +15,21 @@ NAME     = webserv
 CXX      = c++
 CXXFLAGS = -O2 -Wall -Wextra -Werror -std=c++98
 
-SRCS     = $(wildcard src/*.cpp)
+SRCS     = $(wildcard src/*.cpp) $(wildcard src/*/*.cpp)
 INCS     = $(wildcard include/*.hpp)
 OBJDIR   = obj
 OBJS     = $(SRCS:src/%.cpp=$(OBJDIR)/%.o)
+# 필요한 모든 obj 하위 디렉토리 목록 생성
+OBJDIRS  = $(sort $(dir $(OBJS)))
 
-all: $(OBJDIR) $(NAME)
+all: $(OBJDIRS) $(NAME)
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
 
-$(OBJDIR):
-	mkdir -p $(OBJDIR)
+# 미리 모든 필요한 디렉토리를 생성
+$(OBJDIRS):
+	mkdir -p $@
 
 $(OBJDIR)/%.o: src/%.cpp $(INCS)
 	$(CXX) -c $(CXXFLAGS) $< -o $@
