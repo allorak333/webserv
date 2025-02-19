@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/llParser.hpp"
+#include "llParser.hpp"
 
 
 class ParseException : public std::runtime_error

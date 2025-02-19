@@ -13,14 +13,14 @@
 #ifndef WEBSERV_HPP
 # define WEBSERV_HPP
 
-#include "Server.hpp"
-#include "ConfigParsing.hpp"
-#include "ServerConfig.hpp"
-#include "Buffer.hpp"
-#include "Message.hpp"
-#include "File.hpp"
-#include "RequestParser.hpp"
-#include "Library.hpp"
+#include "../server/Server.hpp"
+#include "../parser/ConfigParsing.hpp"
+#include "../server/ServerConfig.hpp"
+#include "../buffer/Buffer.hpp"
+#include "../buffer/Message.hpp"
+#include "../buffer/File.hpp"
+#include "../parser/RequestParser.hpp"
+#include "../buffer/Library.hpp"
 
 class Server;
 

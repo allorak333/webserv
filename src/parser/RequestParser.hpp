@@ -13,9 +13,9 @@
 #ifndef REQUESTPARSER_HPP
 # define REQUESTPARSER_HPP
 
-#include "Library.hpp"
+#include "../buffer/Library.hpp"
 #include "llParser.hpp"
-#include "Message.hpp"
+#include "../buffer/Message.hpp"
 
 class RequestParser {
 

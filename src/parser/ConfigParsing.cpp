@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/ConfigParsing.hpp"
+#include "ConfigParsing.hpp"
 
 ConfigParsing::ConfigParsing() {};
 

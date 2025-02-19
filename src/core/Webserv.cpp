@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/Webserv.hpp"
-#include "../include/Server.hpp"
+#include "Webserv.hpp"
+#include "../server/Server.hpp"
 
 Webserv::Webserv() : kq(0) {}
 

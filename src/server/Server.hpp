@@ -17,12 +17,12 @@
 #include <sys/event.h>
 #include <sys/time.h>
 #include "ServerConfig.hpp"
-#include "Webserv.hpp"
-#include "File.hpp"
-#include "Message.hpp"
-#include "Pipe.hpp"
-#include "MimeParser.hpp"
-#include "CgiParser.hpp"
+#include "../core/Webserv.hpp"
+#include "../buffer/File.hpp"
+#include "../buffer/Message.hpp"
+#include "../buffer/Pipe.hpp"
+#include "../parser/MimeParser.hpp"
+#include "../parser/CgiParser.hpp"
 
 class Server {
 	private:

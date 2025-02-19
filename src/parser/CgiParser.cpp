@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/CgiParser.hpp"
+#include "CgiParser.hpp"
 
 class ParseException : public std::runtime_error
 {

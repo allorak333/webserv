@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/Webserv.hpp"
+#include "core/Webserv.hpp"
 
 int main(int ac, char *av[]) {
 	Webserv webserv;
