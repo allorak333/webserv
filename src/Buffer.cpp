@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/Buffer.hpp"
+#include "Buffer.hpp"
 
 Buffer::Buffer(int fd) : fd(fd) {
 	index = 0;

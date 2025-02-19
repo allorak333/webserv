@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/Message.hpp"
+#include "Message.hpp"
 
 Message::Message(int fd) : 
 Buffer(fd), 

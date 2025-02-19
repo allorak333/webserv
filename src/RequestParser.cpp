@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/RequestParser.hpp"
+#include "RequestParser.hpp"
 
 size_t RequestParser::kmp(std::vector<char> &buf, std::string &target, size_t start)
 {

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/MimeParser.hpp"
+#include "MimeParser.hpp"
 
 size_t MimeParser::kmp(std::string &target)
 {

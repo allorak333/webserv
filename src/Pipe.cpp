@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/Pipe.hpp"
+#include "Pipe.hpp"
 
 
 Pipe::Pipe(int inputFd, int outputFd) : Buffer(outputFd) {

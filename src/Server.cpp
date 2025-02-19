@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/Server.hpp"
-#include "../include/Library.hpp"
+#include "Server.hpp"
+#include "Library.hpp"
 
 Server::Server() : serverFd(0) {}
 

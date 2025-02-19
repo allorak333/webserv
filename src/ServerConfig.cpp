@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/ServerConfig.hpp"
+#include "ServerConfig.hpp"
 
 ServerConfig::ServerConfig()
 	: listen(0),
