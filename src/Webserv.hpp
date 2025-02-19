@@ -14,12 +14,12 @@
 # define WEBSERV_HPP
 
 #include "Server.hpp"
-#include "ConfigParsing.hpp"
+#include "parser/ConfigParsing.hpp"
 #include "ServerConfig.hpp"
 #include "Buffer.hpp"
 #include "Message.hpp"
 #include "File.hpp"
-#include "RequestParser.hpp"
+#include "parser/RequestParser.hpp"
 #include "Library.hpp"
 
 class Server;

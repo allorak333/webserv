@@ -15,7 +15,7 @@
 
 #include <cctype>
 #include <stdexcept>
-#include "Library.hpp"
+#include "../Library.hpp"
 
 class CgiParser{
 	public:

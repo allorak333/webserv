@@ -15,7 +15,7 @@
 
 #include <cctype>
 #include <stdexcept>
-#include "Library.hpp"
+#include "../Library.hpp"
 
 const char NULL_CHAR = '\0';
 const char CR = '\r';

@@ -21,8 +21,8 @@
 #include "File.hpp"
 #include "Message.hpp"
 #include "Pipe.hpp"
-#include "MimeParser.hpp"
-#include "CgiParser.hpp"
+#include "parser/MimeParser.hpp"
+#include "parser/CgiParser.hpp"
 
 class Server {
 	private:
