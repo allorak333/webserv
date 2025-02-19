@@ -13,9 +13,9 @@
 #ifndef MIMEPARSER_HPP
 # define MIMEPARSER_HPP
 
-#include "../Library.hpp"
+#include "../buffer/Library.hpp"
 #include "RequestParser.hpp"
-#include "../File.hpp"
+#include "../buffer/File.hpp"
 
 class MimeParser
 {

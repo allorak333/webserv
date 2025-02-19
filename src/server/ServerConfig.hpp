@@ -13,7 +13,7 @@
 #ifndef SERVER_CONFIG_HPP
 # define SERVER_CONFIG_HPP
 
-#include "../Library.hpp"
+#include "../buffer/Library.hpp"
 #include "Location.hpp"
 
 class ServerConfig {

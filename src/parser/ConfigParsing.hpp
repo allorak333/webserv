@@ -13,7 +13,7 @@
 #ifndef CONFIG_PARSING_HPP
 # define CONFIG_PARSING_HPP
 
-#include "../Library.hpp"
+#include "../buffer/Library.hpp"
 #include "../server/ServerConfig.hpp"
 
 class ServerConfig;

@@ -13,7 +13,7 @@
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
 
-#include "../Library.hpp"
+#include "../buffer/Library.hpp"
 
 class Location {
 	private:

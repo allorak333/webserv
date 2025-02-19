@@ -18,9 +18,9 @@
 #include <sys/time.h>
 #include "ServerConfig.hpp"
 #include "../Webserv.hpp"
-#include "../File.hpp"
-#include "../Message.hpp"
-#include "../Pipe.hpp"
+#include "../buffer/File.hpp"
+#include "../buffer/Message.hpp"
+#include "../buffer/Pipe.hpp"
 #include "../parser/MimeParser.hpp"
 #include "../parser/CgiParser.hpp"
 
