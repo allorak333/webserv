@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "Webserv.hpp"
-#include "Server.hpp"
+#include "server/Server.hpp"
 
 Webserv::Webserv() : kq(0) {}
 

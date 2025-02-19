@@ -13,9 +13,9 @@
 #ifndef WEBSERV_HPP
 # define WEBSERV_HPP
 
-#include "Server.hpp"
+#include "server/Server.hpp"
 #include "parser/ConfigParsing.hpp"
-#include "ServerConfig.hpp"
+#include "server/ServerConfig.hpp"
 #include "Buffer.hpp"
 #include "Message.hpp"
 #include "File.hpp"

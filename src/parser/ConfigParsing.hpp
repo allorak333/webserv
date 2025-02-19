@@ -14,7 +14,7 @@
 # define CONFIG_PARSING_HPP
 
 #include "../Library.hpp"
-#include "../ServerConfig.hpp"
+#include "../server/ServerConfig.hpp"
 
 class ServerConfig;
 
