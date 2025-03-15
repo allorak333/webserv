@@ -10,49 +10,41 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_HPP
-# define SERVER_HPP
 
-#include <sys/types.h>
-#include <sys/event.h>
-#include <sys/time.h>
+#ifndef SERVER_HPP
+#define SERVER_HPP
+
+#include <map>
+#include <string>
+#include <vector>
+#include <memory> // For smart pointers
 #include "ServerConfig.hpp"
-#include "../core/Webserv.hpp"
-#include "../buffer/File.hpp"
+#include "RequestListManager.hpp"
 #include "../buffer/Message.hpp"
 #include "../buffer/Pipe.hpp"
-#include "../parser/MimeParser.hpp"
-#include "../parser/CgiParser.hpp"
+#include "../buffer/File.hpp"
+#include "../handler/RequestHandlerFactory.hpp"
 
 class Server {
-	private:
-		ServerConfig 										config;
-		int													serverFd;
-		struct sockaddr_in 									serverAddr;
-		std::map<Buffer*, std::pair<Buffer*, HttpRequest*> >	requestList;
-		std::map<pid_t, clock_t>				childTime;
-		
-	public:
-		Server();
-		~Server();
+private:
+    ServerConfig                        config;
+    int									serverFd;
+    struct sockaddr_in 					serverAddr;
+    RequestListManager                  requestListManager;
+    std::unique_ptr<IRequestHandler>    requestHandler; // Use strategy pattern
+    std::map<pid_t, clock_t>			childTime;
 
-		ServerConfig getConfig();
-		int getServerFd() const;
-		std::map<pid_t, clock_t>& getChildTime();
-	
-		int checkValid(HttpRequest & request, std::string & target);
-		std::vector<Buffer*> processRequest(Buffer *client, HttpRequest &request, std::vector <struct kevent> &changeList);
-		int afterProcessRequest(Buffer *file, struct kevent &change);
-		std::vector<char> makeResponseWithNoBody(HttpRequest &request, int code);
-		void initServer(ServerConfig & config);
-		bool findMatchingLocation(std::string & requestURL, Location & location);
-		bool findMatchingExtension(std::string & target, Location & myExtension);
-		std::string makeDefaultErrorPage(int & code, std::string & message);
-		std::string makeHeader(HttpRequest & request, int & code, std::string & message, std::vector<char> &body, std::string & contentType);
-		pid_t handleCGI(int inputFileFd[2], int outputFileFd[2], std::string & target, HttpRequest &request);
-		void deleteRequestByFile(Buffer *buf);
-		char** makeEnvp(std::string & target, HttpRequest &request);
-		void cgiHeaderParsing(std::string & cgiHeader, int & code, std::string &message, std::string & contentType);
+public:
+    Server();
+    ~Server();
+    std::map<pid_t, clock_t>&   getChildTime();
+    void                        initServer(const ServerConfig& config);
+    ServerConfig                getConfig() const;
+    int                         getServerFd() const;
+    std::vector<Buffer*>        processRequest(Buffer* client, HttpRequest& request, std::vector<struct kevent>& changeList);
+    void                        afterProcessRequest(Buffer *file, std::vector<struct kevent>& changeList);
+    void                        deleteRequestByFile(Buffer *buf);
+
 };
 
 #endif

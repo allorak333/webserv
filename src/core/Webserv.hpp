@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Webserv.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: haejeong <haejeong@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sangyhan <sangyhan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/24 10:49:19 by haejeong          #+#    #+#             */
-/*   Updated: 2024/07/22 13:48:59 by haejeong         ###   ########.fr       */
+/*   Updated: 2025/03/15 17:12:18 by sangyhan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ class Webserv {
 		Webserv & operator=(const Webserv & other);
 		
 		ConfigParsing						configParsing;
-		std::map<int, Server> 				serverList;
+		std::map<int, Server*> 				serverList;
 		std::map<int, int> 					serverFdMap;
 		int 								kq;
 		std::vector<struct kevent> 			changeList;

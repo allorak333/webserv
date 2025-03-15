@@ -46,9 +46,9 @@ void Webserv::closeSocket(int bufferIdx) {
 				pipe->closeInput();
 				pipe->closeOutput();
 			}
-			std::map<int, Server>::iterator server = serverList.find(serverFd);
+			std::map<int, Server*>::iterator server = serverList.find(serverFd);
 			if (server != serverList.end())
-				server->second.deleteRequestByFile(bufList.front());
+				server->second->deleteRequestByFile(bufList.front());
 			delete bufferList[i]; // delete File
 			bufferList.erase(bufferList.begin() + i);
 			i -= 1;

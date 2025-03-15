@@ -6,7 +6,7 @@
 /*   By: sangyhan <sangyhan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/21 16:19:03 by haejeong          #+#    #+#             */
-/*   Updated: 2024/08/09 20:08:10 by sangyhan         ###   ########.fr       */
+/*   Updated: 2025/03/15 18:43:11 by sangyhan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ struct HttpRequest {
     size_t bodyEnd;
     bool error;
     
-    int fd;
+    int serverFd;
     size_t fileCount;
     bool                isCgi;
     bool                chunked;
